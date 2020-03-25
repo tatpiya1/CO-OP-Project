@@ -1,0 +1,36 @@
+---
+# handlers file for RHEL7Hardening
+- name: systemd restart tmp.mount
+  become: yes
+  systemd:
+    name: tmp.mount
+    daemon_reload: yes
+    enabled: yes
+    masked: no
+    state: reloaded
+
+- name: generate new grub config
+  become: yes
+  shell: grub2-mkconfig -o {{ grub_cfg.stat.lnk_source }}
+
+- name: restart xinetd
+  become: yes
+  service:
+    name: xinetd
+    state: restarted
+
+
+
+- name: systemctl restart postfix | permissions fix
+  command: postfix -c /etc/postfix/ set-permissions
+  become: yes
+  listen: systemctl restart postfix
+
+
+
+- name: systemctl restart postfix | systemctl restart
+  become: yes
+  service:
+    name: postfix
+    state: restarted
+  listen: systemctl restart postfix

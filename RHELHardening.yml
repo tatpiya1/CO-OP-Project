@@ -1,0 +1,22 @@
+---
+- hosts: all
+  become: yes
+  become_method: sudo
+  gather_facts: true
+  ignore_errors: false
+  ignore_unreachable: true
+  vars:
+    ignore_errors: false
+    ignore_unreachable: true
+    rhel7cis_bootloader_password: rootpw
+    rhel7cis_set_boot_pass: true
+    rhel7cis_ipv6_required: false
+    rhel7cis_time_synchronization: chrony
+    rhel7cis_time_synchronization_servers:
+    - 10.4.254.1
+
+  roles:
+    - role: RHEL7-CIS
+  post_tasks:
+    - meta: clear_host_errors
+      when: ignore_unreachable
